@@ -1,31 +1,27 @@
-import psycopg2
+from pyspark.sql import SparkSession
 
+spark = SparkSession \
+    .builder \
+    .appName("Python Spark SQL basic example") \
+    .config("spark.jars", "/path_to_postgresDriver/postgresql-42.2.5.jar") \
+    .getOrCreate()
 
-def fib(dictionary):
-# connection establishment
-    conn = psycopg2.connect(
-    database="postgres",
-    user='postgres',
-    password='postgres',
-    host='localhost',
-    port='5432'
-    )
+df = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:postgresql://localhost:5432/databasename") \
+    .option("dbtable", "tablename") \
+    .option("user", "username") \
+    .option("password", "password") \
+    .option("driver", "org.postgresql.Driver") \
+    .load()
 
-    conn.autocommit = True
-    cursor = conn.cursor()
-
-    #columns = dictionary.keys()
-    #for i in dictionary.values():
-    sql2 = f'''insert into task1.food(dish,description,ingredient,measurement) 
-    VALUES('{dictionary['dish']}','{dictionary['description']}','{dictionary['ingredient']}'
-    ,'{dictionary['measurement']}');'''
-
-    cursor.execute(sql2)
-
-    sql3 = '''select * from task1.food;'''
-    cursor.execute(sql3)
-    for i in cursor.fetchall():
-        print(i)
-
-    conn.commit()
-    conn.close()
+dataDictionary = [
+        ('James',{'hair':'black','eye':'brown'}),
+        ('Michael',{'hair':'brown','eye':None}),
+        ('Robert',{'hair':'red','eye':'black'}),
+        ('Washington',{'hair':'red','eye':'grey'}),
+        ('Jefferson',{'hair':'red','eye':''})
+        ]
+df = spark.createDataFrame(data=dataDictionary, schema = ["name","properties"])
+df.printSchema()
+df.show(truncate=False)
