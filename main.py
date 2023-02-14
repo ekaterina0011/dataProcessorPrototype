@@ -6,15 +6,27 @@ import os
 import sys
 
 if __name__ == '__main__':
+
     config = Config('./config/config.yml')
     uploader = Uploader(config)
     os.environ['PYSPARK_PYTHON'] = sys.executable
     os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-    spark = SparkSession.builder.appName('Amogus').getOrCreate()
+    spark = SparkSession \
+        .builder \
+        .appName("Python Spark SQL basic example") \
+        .config("spark.jars", "./postgresql-42.5.3.jar") \
+        .getOrCreate()
+
     dataDict = uploader.get_data()
     #a = fib(dataDict)
     dbl=upl.abc(dataDict,spark)
     dbl.show()
+
+    mode = "append"
+    url = "jdbc:postgresql://localhost:5432/postgres"
+    properties = {"user": "postgres", "password": "postgres", "driver": "org.postgresql.Driver"}
+    dbl.write.jdbc(url=url, table="task1.food", mode=mode, properties=properties)
+
     print(dbl)
     # a= fib(17) #как передавать параметры
     # dish = class_schema(Dish).load(uploader.get_data())
