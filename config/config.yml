@@ -1,3 +1,16 @@
-data_source:
-  url: 'https://random-data-api.com/api/food/random_food?size=2'
-  batch_size: 12
+uploader:
+  food:
+    url: 'https://random-data-api.com/api/food/random_food'
+    min_batch_size: 1
+    max_batch_size: 2
+    table: 'task1.food'
+  dessert:
+    url: 'https://random-data-api.com/api/dessert/random_dessert'
+    min_batch_size: 1
+    max_batch_size: 2
+    table: 'task1.desserts'
+
+db_connect:
+    mode: "append"
+    url : "jdbc:postgresql://localhost:5432/postgres"
+    properties: {"user": "postgres", "password": "postgres", "driver": "org.postgresql.Driver"}
