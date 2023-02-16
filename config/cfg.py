@@ -1,23 +1,35 @@
+import random
 import yaml
 
-
 class Config:
-    def __init__(self, config_path):
-        with open(config_path) as cp:# контекстный менеджер
-            read_data = yaml.load(cp, Loader=yaml.FullLoader)
+    def __init__(self, config_path, data_source, date):
+        with open(config_path) as cp:  # контекстный менеджер
+            cfgDict = yaml.load(cp, Loader=yaml.FullLoader)
 
-            self.food_url = read_data['uploader']['food']['url']
-            self.food_min_batch_size = read_data['uploader']['food']['max_batch_size']
-            self.food_max_batch_size = read_data['uploader']['food']['max_batch_size']
-            self.food_table = read_data['uploader']['food']['table']
+            self.data_source = data_source
+            self.date = date
+            self.db_mode = cfgDict['db_connect']['mode']
+            self.db_url = cfgDict['db_connect']['url']
+            self.db_properties = cfgDict['db_connect']['properties']
+            self.request_history_table = cfgDict['uploader']['request_history']['table']
 
-            self.dessert_url = read_data['uploader']['dessert']['url']
-            self.dessert_min_batch_size = read_data['uploader']['dessert']['max_batch_size']
-            self.dessert_max_batch_size = read_data['uploader']['dessert']['max_batch_size']
-            self.dessert_table = read_data['uploader']['dessert']['table']
+            self.spark_app_name = cfgDict['spark']['app_name']
+            self.spark_config_key = cfgDict['spark']['config']['key']
+            self.spark_config_value = cfgDict['spark']['config']['value']
 
-            self.db_mode = read_data['db_connect']['mode']
-            self.db_url = read_data['db_connect']['url']
-            self.db_properties = read_data['db_connect']['properties']
-
-
+            if data_source == 'dessert':
+                self.api_url = cfgDict['uploader']['dessert']['api_url']
+                self.batch_size = random.randint(
+                    cfgDict['uploader']['dessert']['max_batch_size'],
+                    cfgDict['uploader']['dessert']['max_batch_size']
+                )
+                self.target_table = cfgDict['uploader']['dessert']['table']
+            elif data_source == 'food':
+                self.api_url = cfgDict['uploader']['food']['api_url']
+                self.batch_size = random.randint(
+                    cfgDict['uploader']['food']['max_batch_size'],
+                    cfgDict['uploader']['food']['max_batch_size']
+                )
+                self.target_table = cfgDict['uploader']['food']['table']
+            else:
+                raise Exception("Wrong data_source parameter")
