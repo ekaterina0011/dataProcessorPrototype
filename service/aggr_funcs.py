@@ -38,4 +38,4 @@ class Aggr_Data:
         df3.agg({'aggr.batch_size': 'stddev'}).show()
         df3.agg({'aggr.batch_size': 'count'}).show()
 
-        df3.write.mode('append').csv('./mycsv')
+        #df3.write.mode('append').csv('./mycsv')
